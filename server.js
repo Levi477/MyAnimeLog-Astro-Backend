@@ -2,15 +2,13 @@ const { createUser, findUser, adminGetUsers } = require("./db/db");
 const express = require("express");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
-const { BACKEND_PORT } = require("./constants/URI");
-
 const app = express();
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const port = BACKEND_PORT;
+const port = 3000;
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server started on port ${port}`);

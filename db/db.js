@@ -1,9 +1,8 @@
 const User = require('./Users');
 const mongoose = require('mongoose');
-const {DB_URI} = require('./constants/URI')
 
 // mongoose.connect('mongodb://localhost/login-system-test');
-mongoose.connect(DB_URI);
+mongoose.connect("mongodb+srv://leviAckerman:deep0904@videotube.in6sxwa.mongodb.net/?retryWrites=true&w=majority&appName=VideoTube");
 
 const createUser = async (username,password) => {
     try {
