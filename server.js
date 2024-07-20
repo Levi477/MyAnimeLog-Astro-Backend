@@ -1,4 +1,4 @@
-const { createUser, findUser, adminGetUsers } = require("./db/db");
+const { createUser, findUser, adminGetUsers,saveComment,saveRating,updateRating } = require("./db/db");
 const express = require("express");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
@@ -73,11 +73,7 @@ app.route("/api/user/:username").get(async (req, res) => {
   try {
     const user = await findUser(req.params.username);
     if (user) {
-      res.json({
-        success: true,
-        username: user.username,
-        password: user.password,
-      });
+      res.json(user);
     } else {
       res.status(404).json({ success: false, message: "User not found" });
     }
@@ -100,3 +96,119 @@ app.route("/api/users").get(async (req, res) => {
     res.status(500).json({ success: false, message: "An error occurred" });
   }
 });
+
+app.route("/api/user/:username/comment")
+.post(async (req,res) => {
+    try{
+      const username = req.params.username
+      const comment = req.body.comment
+      const anime = req.body.anime
+      
+      const commentStatus = await saveComment(username,anime,comment)
+
+      if(commentStatus != null){
+        console.log("Comment saved succesfully");
+        res.status(201).json({success: true})
+      }
+      else{
+        console.log("error saving comment");
+        res.status(404).json({success: false})
+      }
+    }
+    catch(error){
+      console.log(error);
+      res.status(404).json({success: false})
+
+    }
+
+})
+
+app.route("/api/comments")
+.get(async (req,res) => {
+  try{
+    const users = await adminGetUsers();
+    let comment_data = [];
+    if(users != null){
+      users.forEach(user => {
+          comment_data.push({username: user.username,comments: user.comments})
+      })
+      res.json({success: true,comment_data: comment_data})
+    }
+    else{
+      res.json({success: false})
+    }
+  }
+  catch(error){
+    res.json({success: false})
+    console.log(error);
+  }
+})
+
+app.route("/api/user/:username/rating")
+.post(async (req,res) => {
+    try{
+      const username = req.params.username
+      const rating = req.body.rating
+      const anime = req.body.anime
+      
+      const ratingStatus = await saveRating(username,anime,rating);
+
+      if(ratingStatus != null){
+        console.log("Rating saved succesfully");
+        res.status(201).json({success: true})
+      }
+      else{
+        console.log("error saving rating");
+        res.status(404).json({success: false})
+      }
+    }
+    catch(error){
+      console.log(error);
+      res.status(404).json({success: false})
+
+    }
+  }
+  )
+
+  .put(async (req,res) => {
+    try {
+      const username = req.params.username;
+      const anime = req.body.anime;
+      const rating = req.body.rating;
+
+      const response = await updateRating(username,anime,rating)
+
+      if(response != null){
+        console.log("rating updated ");
+        res.json({success: true})
+      }
+      else{
+        res.json({success: true})
+      }
+
+    } catch (error) {
+      console.log(error);
+      res.json({success: true})
+    }
+  })
+
+app.route("/api/ratings")
+.get(async (req,res) => {
+  try{
+    const users = await adminGetUsers();
+    let rating_data = [];
+    if(users != null){
+      users.forEach(user => {
+        rating_data.push({username: user.username,ratings: user.ratings})
+      })
+      res.json({success: true,rating_data: rating_data})
+    }
+    else{
+      res.json({success: false})
+    }
+  }
+  catch(error){
+    res.json({success: false})
+    console.log(error);
+  }
+})
